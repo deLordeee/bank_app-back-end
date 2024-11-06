@@ -1,0 +1,17 @@
+services:
+  app:
+    image: banking-app
+    container_name: banking-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-banking:3306/banking_app
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=java_library
+    networks:
+      - banking-network
+
+networks:
+  banking-network:
+    name: banking-network
+    external: true

@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.management.relation.Role;
+import java.util.Set;
+
 @Entity
 @Table(name = "accout")
 @Getter
@@ -18,7 +21,9 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Long id;
-    @Column(name = "account_holder_name")
+    @Column(name = "account_holder_name", unique = true, nullable = false)
     private String accountHolderName;
     private double balance;
+    @Column(name = "account_password")
+    private String password;
 }
