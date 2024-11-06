@@ -1,4 +1,4 @@
-# bank_app-back-end
+# Back-end for banking app
 # Modern Banking Application
 
 A robust banking system built with Spring Boot that provides secure account management and comprehensive transaction services.
