@@ -28,26 +28,34 @@ public class DepositServiceImpl implements DepositService {
         this.accountRepository = accountRepository;
     }
     @Override
-    public Deposit createDeposit(Long id, double amount, int years) {
+    public Deposit createDeposit(Long id, double amount, int months) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Invalid amount!");
         }
-        if (years <= 0) {
-            throw new IllegalArgumentException("Invalid amount!");
+        if (months <= 0) {
+            throw new IllegalArgumentException("Invalid months!");
         }
+
         Account depositer = accountRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("Account does not exist"));
 
+        // First check if there's enough balance
+        if (depositer.getBalance() < amount) {
+            throw new IllegalArgumentException("Not enough money!");
+        }
+
+        // Then deduct the amount
+        depositer.setBalance(depositer.getBalance() - amount);
+        accountRepository.save(depositer);
+
         double interestRate = 0.09;
-
         Deposit tempDeposit = new Deposit();
-        double earnedInterest = tempDeposit.earnedMoney(amount, interestRate,years);
+        double earnedInterest = tempDeposit.earnedMoney(amount, interestRate, months);
 
-        Deposit deposit = new Deposit(null , amount , earnedInterest ,
-                interestRate,years*12,LocalDate.now() ,
-                LocalDate.now().plusYears(years),depositer, DepositStatus.ACTIVE);
-
+        Deposit deposit = new Deposit(null, amount, earnedInterest,
+                interestRate, months, LocalDate.now(),
+                LocalDate.now().plusYears(months/12), depositer, DepositStatus.ACTIVE);
 
         return depositRepository.save(deposit);
     }
@@ -94,5 +102,22 @@ public class DepositServiceImpl implements DepositService {
 
         accountRepository.saveAndFlush(depositer);
         return depositRepository.saveAndFlush(deposit);
+    }
+    @Override
+    public List<Deposit> getDepositsByAccountId(Long accountId) {
+        return depositRepository.findByDepositerAccount_Id(accountId);
+    }
+    @Override
+    public void withdrawAll(Long accountId, Long depositId) {
+        Deposit deposit = depositRepository.findById(depositId)
+                .orElseThrow(() -> new RuntimeException("Deposit not found"));
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        double totalAmount = deposit.getPrincipal() + deposit.getInterestEarned();
+        account.setBalance(account.getBalance() + totalAmount);
+
+        accountRepository.save(account);
+        depositRepository.delete(deposit);
     }
 }

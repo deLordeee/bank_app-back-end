@@ -11,4 +11,7 @@ public interface DepositService {
     List<Deposit> getAllDeposits();
 
     Deposit withdrawDeposit(Long account_id,Long loan_id , double amount);
+
+    List<Deposit> getDepositsByAccountId(Long id);
+    void withdrawAll(Long acccountId , Long depositId);
 }

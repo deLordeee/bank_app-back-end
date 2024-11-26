@@ -5,11 +5,11 @@ FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copy the pom.xml and download dependencies
-COPY pom.xml ./
+COPY Banking-App/pom.xml ./
 RUN mvn dependency:go-offline -B
 
 # Copy the source code
-COPY src ./src
+COPY Banking-App/src ./src
 
 # Build the project
 RUN mvn clean package -DskipTests

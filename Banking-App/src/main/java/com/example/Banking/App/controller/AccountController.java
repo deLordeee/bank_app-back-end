@@ -54,7 +54,7 @@ public class AccountController {
 
     }
 
-    @PutMapping("/{id}/withdraw")
+    @PostMapping("{id}/withdraw")
     public ResponseEntity<AccountDto> withdraw(@PathVariable Long id ,
                                                @RequestBody Map<String , Double> request ){
         Double amount = request.get("amount");

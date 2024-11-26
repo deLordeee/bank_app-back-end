@@ -41,6 +41,15 @@ public class LoanServiceImpl implements LoanService {
         Loan loan = loanRepository
                 .findById(loan_id)
                 .orElseThrow(()-> new RuntimeException("Loan does not exist"));
+
+        Account account = accountRepository
+                .findById(loan.getBorrowerAccount().getId())
+                .orElseThrow(()-> new RuntimeException("Account not found!"));
+
+        if(amount > account.getBalance()){
+            throw  new IllegalArgumentException("Not enough money on the balance!");
+        }
+
         double total_amount;
         if(amount > loan.getRemainToPay()){
            amount = loan.getRemainToPay();
@@ -53,11 +62,19 @@ public class LoanServiceImpl implements LoanService {
         loan.setRemainToPay(total_amount);
 
 
+
+        account.setBalance(account.getBalance() - amount);
+
+        accountRepository.save(account);
         Loan savedLoan = loanRepository.save(loan);
 
         return savedLoan;
     }
 
+    @Override
+    public List<Loan> getLoansByAccountId(Long accountId) {
+        return loanRepository.findByBorrowerAccount_Id(accountId);
+    }
     @Override
     public Loan takeLoan(Long id, double amount , int years) {
         if (amount <= 0) {

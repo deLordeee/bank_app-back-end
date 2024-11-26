@@ -6,6 +6,7 @@ import com.example.Banking.App.entity.Loan;
 import com.example.Banking.App.transaction.Transaction;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface AccountService {
@@ -26,6 +27,9 @@ public interface AccountService {
     List<AccountDto> transfer(Long sender_id , Long receiver_id , double amount);
 
     String verify(Account account);
+
+
+    AccountDto getAccountByName(String accountHolderName);
 
 
 }

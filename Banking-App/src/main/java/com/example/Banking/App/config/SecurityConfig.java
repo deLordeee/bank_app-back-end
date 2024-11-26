@@ -29,24 +29,26 @@ public class SecurityConfig {
     private JwtFilter jwtFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-
         return httpSecurity
-                .csrf(customizer-> customizer.disable())
+                .csrf(customizer -> customizer
+                        .ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/accounts/createAccount", "/api/accounts/login", "/api/accounts/csrf-token")
-                        .permitAll()
+                        .requestMatchers("/api/accounts/createAccount", "/api/accounts/login", "/api/accounts/csrf-token").permitAll()
+                        .requestMatchers("/register", "/login", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter , UsernamePasswordAuthenticationFilter.class)
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/dashboard", true)
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login")
+                        .permitAll())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))  // Changed from STATELESS
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-
-        // httpSecurity.formLogin(Customizer.withDefaults());
-
-
-
-
     }
 
     @Bean

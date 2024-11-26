@@ -36,8 +36,8 @@ public class Deposit {
     private DepositStatus status;
 
 
-    public double earnedMoney(double amount , double interRate , int years){
-        double totalMoney =  amount * pow((1+interRate) , years);
+    public double earnedMoney(double amount , double interRate , int months){
+        double totalMoney =  amount * pow((1+interRate) , months/12);
         double earnedMoney = totalMoney - amount;
         return earnedMoney;
     }

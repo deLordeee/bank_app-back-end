@@ -3,6 +3,7 @@ package com.example.Banking.App.service.impl;
 import com.example.Banking.App.dto.AccountDto;
 import com.example.Banking.App.entity.Account;
 import com.example.Banking.App.entity.Loan;
+import com.example.Banking.App.entity.ResourceNotFoundException;
 import com.example.Banking.App.repository.LoanRepository;
 import com.example.Banking.App.service.JWT.JWTService;
 import com.example.Banking.App.transaction.Transaction;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.Banking.App.entity.Loan_Status.ACTIVE;
@@ -101,7 +103,7 @@ public class AccountServiceImpl implements AccountService {
 
 
         if (account.getBalance() < amount) {
-            throw new RuntimeException("Not enough money!");
+            throw new IllegalArgumentException("Not enough money!");
         }
 
         double total = account.getBalance() - amount;
@@ -129,6 +131,18 @@ public class AccountServiceImpl implements AccountService {
         }
         return "Fail";
     }
+
+    @Override
+    public AccountDto getAccountByName(String accountHolderName) {
+        Account account = accountRepository.findByAccountHolderName(accountHolderName);
+                //.orElseThrow(() -> new ResourceNotFoundException("Account", "accountHolderName", accountHolderName));
+        return AccountMapper.mapToAccountDto(account);
+    }
+
+
+
+    // Add this mapper method if not already present
+
 
     @Override
     public List<AccountDto> getAllAccounts() {

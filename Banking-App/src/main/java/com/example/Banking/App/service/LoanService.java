@@ -11,4 +11,6 @@ public interface LoanService {
     List<Loan> getAllLoans();
 
     Loan payLoan(Long loan_id , double amount);
+
+    List<Loan> getLoansByAccountId(Long id);
 }

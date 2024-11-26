@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/deposits")
+@RequestMapping("/api/deposits")
 public class DepositController {
     @Autowired
     private DepositService depositService;
@@ -37,5 +37,10 @@ public class DepositController {
 
         Deposit deposit = depositService.withdrawDeposit(account_id , deposit_id , amount);
         return ResponseEntity.ok(deposit);
+    }
+    @PostMapping("/{account_id}/{deposit_id}/withdrawAll")
+    public String withdrawAll(@PathVariable Long account_id, @PathVariable Long deposit_id) {
+        depositService.withdrawAll(account_id, deposit_id);
+        return "redirect:/deposit/" + account_id;
     }
 }
