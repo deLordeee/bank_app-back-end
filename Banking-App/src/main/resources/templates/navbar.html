@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<div th:fragment="navbar(activeTab)">
+    <div class="navbar">
+        <a th:href="@{/dashboard}" th:class="${activeTab == 'dashboard'} ? 'active' : ''">Dashboard</a>
+        <a th:href="@{/deposit}" th:class="${activeTab == 'deposit'} ? 'active' : ''">Deposit</a>
+        <a th:href="@{/withdraw}" th:class="${activeTab == 'withdraw'} ? 'active' : ''">Withdraw</a>
+        <a th:href="@{/transfer}" th:class="${activeTab == 'transfer'} ? 'active' : ''">Transfer</a>
+        <a th:href="@{/view/loans}" th:class="${activeTab == 'loans'} ? 'active' : ''">Loans</a>
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

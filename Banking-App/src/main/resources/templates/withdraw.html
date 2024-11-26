@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Withdraw Money</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{navbar :: navbar('withdraw')}"></div>
+
+
+<div class="content">
+    <div th:if="${param.error}" class="alert alert-danger" role="alert">
+        <span th:text="${param.error}"></span>
+    </div>
+    <div class="balance-box">
+        <h2>Current Balance</h2>
+        <p class="balance" th:text="${'$' + account.balance}"></p>
+    </div>
+
+    <div class="action-box">
+        <h2>Withdraw Money</h2>
+        <form th:action="@{/withdraw/{id}(id=${account.id})}" method="post">
+            <div class="form-group">
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount" step="0.01" min="0" required>
+            </div>
+            <button type="submit" class="action-button">Withdraw</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

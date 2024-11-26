@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Banking App - Deposits</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="bg-light">
+<div th:replace="~{navbar :: navbar('deposit')}"></div>
+
+<div class="container mt-4">
+    <div th:if="${param.error}" class="alert alert-danger" role="alert">
+        <span th:text="${param.error}"></span>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Create New Deposit</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/deposit/{id}/createDeposit(id=${account.id})}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Deposit Amount</label>
+                            <input type="number" class="form-control" name="amount" required min="0.01" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Maturity Duration (years)</label>
+                            <input type="number" class="form-control" name="maturityDuration" required min="1" step="1" placeholder="Enter number of months">
+                            <small class="text-muted">Enter any number of months for your deposit duration</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Create Deposit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Active Deposits</h5>
+                </div>
+                <div class="card-body">
+                    <div th:each="deposit : ${deposits}" class="mb-3 p-3 border rounded shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-primary">Deposit Amount: <span th:text="${'$' + #numbers.formatDecimal(deposit.principal, 1, 2)}" class="text-dark"></span></h6>
+                                <p class="mb-1">Maturity Duration: <span th:text="${deposit.termInMonths + ' months'}"></span></p>
+                                <p class="mb-1">Interest Rate: <span th:text="${#numbers.formatDecimal(deposit.interestRate, 1, 2) + '%'}" class="text-success"></span></p>
+                                <p class="mb-1">Expected Returns: <span th:text="${'$' + #numbers.formatDecimal(deposit.interestEarned, 1, 2)}" class="text-success"></span></p>
+                                <p class="mb-0">Maturity Date: <span th:text="${deposit.maturityDate}" class="text-muted"></span></p>
+                            </div>
+                            <div>
+                                <!-- Existing withdrawal form -->
+                                <form th:action="@{/deposit/{account_id}/{deposit_id}/withdrawDeposit(account_id=${account.id},deposit_id=${deposit.id})}" method="post">
+                                    <input type="number" class="form-control mb-2" name="amount" placeholder="Amount to withdraw" required min="0.01" step="0.01">
+                                    <button type="submit" class="btn btn-success btn-sm w-100 mb-2">Withdraw</button>
+                                </form>
+
+                                <!-- New Withdraw All form -->
+                                <form th:action="@{/deposit/{account_id}/{deposit_id}/withdrawAll(account_id=${account.id},deposit_id=${deposit.id})}" method="post">
+                                    <button type="submit" class="btn btn-warning btn-sm w-100">Withdraw All</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(deposits)}" class="text-center text-muted py-4">
+                        <p>No active deposits found</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interest Rates Information -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Current Interest Rates</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h6>1 Year</h6>
+                            <p class="text-success">4.5% p.a.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>3 Years</h6>
+                            <p class="text-success">5.5% p.a.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>5 Years</h6>
+                            <p class="text-success">6.5% p.a.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
