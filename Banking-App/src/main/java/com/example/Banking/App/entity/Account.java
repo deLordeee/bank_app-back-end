@@ -26,4 +26,8 @@ public class Account {
     private double balance;
     @Column(name = "account_password")
     private String password;
+    @Column(name = "monthly_spent", nullable = false)
+    private Double monthly_spending = 0.0;
+    @Column(name = "monthly_earn", nullable = false)
+    private Double monthly_earn = 0.0;
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Exchange Rates</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+</head>
+<body>
+<div th:replace="~{navbar :: navbar('rates')}"></div>
+
+<div class="rates-container">
+    <h2>Current Exchange Rates</h2>
+    <div class="rate-item">
+        <span class="currency">EUR</span>
+        <span class="rate-value" th:text="${rates.EUR}">0.00</span>
+    </div>
+    <div class="rate-item">
+        <span class="currency">UAH</span>
+        <span class="rate-value" th:text="${rates.UAH}">0.00</span>
+    </div>
+    <div class="rate-item">
+        <span class="currency">GBP</span>
+        <span class="rate-value" th:text="${rates.GBP}">0.00</span>
+    </div>
+    <div class="rate-item">
+        <span class="currency">PLN</span>
+        <span class="rate-value" th:text="${rates.PLN}">0.00</span>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spending & Earning</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{navbar :: navbar('spending-earning')}"></div>
+
+<div class="content">
+    <div class="stats-container">
+        <div class="stats-card spending">
+            <h2>Monthly Spending</h2>
+            <div class="amount" th:text="${#numbers.formatDecimal(account.monthly_spending, 1, 'COMMA', 2, 'POINT')} + ' USD'"></div>
+        </div>
+
+        <div class="stats-card earning">
+            <h2>Monthly Earning</h2>
+            <div class="amount" th:text="${#numbers.formatDecimal(account.monthly_earn, 1, 'COMMA', 2, 'POINT')} + ' USD'"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -132,6 +133,7 @@ public class WebController {
                            @RequestParam("amount") Double amount,
                            RedirectAttributes redirectAttributes) {
         try {
+
             AccountDto receiverAccount = accountService.getAccountByName(recipientName);
             accountService.transfer(senderId, receiverAccount.getId(), amount);
             redirectAttributes.addFlashAttribute("success", "Transfer completed successfully");
@@ -150,5 +152,11 @@ public class WebController {
     public String withdrawAll(@PathVariable Long account_id, @PathVariable Long deposit_id) {
         depositService.withdrawAll(account_id, deposit_id);
         return "redirect:/deposit";
+    }
+    @GetMapping("/spending-earning")
+    public String showSpendingEarning(Model model, Principal principal) {
+        Account account = accountService.findByAccountHolderName(principal.getName());
+        model.addAttribute("account", account);
+        return "spending-earning";
     }
 }

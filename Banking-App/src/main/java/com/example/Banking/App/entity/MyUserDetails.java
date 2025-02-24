@@ -13,7 +13,9 @@ public class MyUserDetails implements UserDetails {
     public MyUserDetails(Account account) {
         this.account = account;
     }
-
+    public String getAccountHolderName() {  // ✅ Add this getter
+        return account.getAccountHolderName();
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority("USER"));

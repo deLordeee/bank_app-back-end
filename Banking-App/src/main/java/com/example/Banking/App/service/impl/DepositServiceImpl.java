@@ -1,9 +1,11 @@
 package com.example.Banking.App.service.impl;
 
+import com.example.Banking.App.dto.DepositDto;
 import com.example.Banking.App.entity.Account;
 import com.example.Banking.App.entity.Deposit;
 import com.example.Banking.App.entity.DepositStatus;
 import com.example.Banking.App.entity.Loan;
+import com.example.Banking.App.entity.kafka.Producer;
 import com.example.Banking.App.repository.AccountRepository;
 import com.example.Banking.App.repository.DepositRepository;
 
@@ -23,9 +25,14 @@ public class DepositServiceImpl implements DepositService {
 
     private final AccountRepository accountRepository;
 
-    public DepositServiceImpl( DepositRepository depositRepository, AccountRepository accountRepository) {
+    private final Producer kafkaProducer;
+
+    public DepositServiceImpl(DepositRepository depositRepository,
+                              AccountRepository accountRepository,
+                              Producer kafkaProducer) {
         this.depositRepository = depositRepository;
         this.accountRepository = accountRepository;
+        this.kafkaProducer = kafkaProducer;
     }
     @Override
     public Deposit createDeposit(Long id, double amount, int months) {
@@ -44,7 +51,7 @@ public class DepositServiceImpl implements DepositService {
         if (depositer.getBalance() < amount) {
             throw new IllegalArgumentException("Not enough money!");
         }
-
+        depositer.setMonthly_spending(depositer.getMonthly_spending() + amount);
         // Then deduct the amount
         depositer.setBalance(depositer.getBalance() - amount);
         accountRepository.save(depositer);
@@ -56,6 +63,18 @@ public class DepositServiceImpl implements DepositService {
         Deposit deposit = new Deposit(null, amount, earnedInterest,
                 interestRate, months, LocalDate.now(),
                 LocalDate.now().plusYears(months/12), depositer, DepositStatus.ACTIVE);
+
+
+        // Send Kafka event
+        DepositDto depositDto = new DepositDto();
+        depositDto.setId(deposit.getId());
+        depositDto.setAccountId(id);
+        depositDto.setAmount(amount);
+        depositDto.setAction("CREATED");
+        depositDto.setTimestamp(LocalDate.now());
+
+        kafkaProducer.sendMessage(depositDto);
+
 
         return depositRepository.save(deposit);
     }
@@ -97,9 +116,18 @@ public class DepositServiceImpl implements DepositService {
             deposit.setInterestEarned(deposit.getInterestEarned() - amount);
             depositer.setBalance(depositer.getBalance() + amount);
         }
+        depositer.setMonthly_earn(depositer.getMonthly_earn() + amount);
         Account savedAccount = accountRepository.save(depositer);
         Deposit savedDeposit = depositRepository.save(deposit);
 
+        DepositDto depositDto = new DepositDto();
+        depositDto.setId(deposit_id);
+        depositDto.setAccountId(account_id);
+        depositDto.setAmount(amount);
+        depositDto.setAction("WITHDRAWN");
+        depositDto.setTimestamp(LocalDate.now());
+
+        kafkaProducer.sendMessage(depositDto);
         accountRepository.saveAndFlush(depositer);
         return depositRepository.saveAndFlush(deposit);
     }
@@ -116,6 +144,8 @@ public class DepositServiceImpl implements DepositService {
 
         double totalAmount = deposit.getPrincipal() + deposit.getInterestEarned();
         account.setBalance(account.getBalance() + totalAmount);
+
+        account.setMonthly_earn(account.getMonthly_earn() + totalAmount);
 
         accountRepository.save(account);
         depositRepository.delete(deposit);

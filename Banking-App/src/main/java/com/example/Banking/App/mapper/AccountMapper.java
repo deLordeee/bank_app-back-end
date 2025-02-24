@@ -10,8 +10,9 @@ public class AccountMapper {
                 accountDto.getId(),
                 accountDto.getAccountHolderName(),
                 accountDto.getBalance(),
-                accountDto.getPassword()
-
+                accountDto.getPassword(),
+                accountDto.getM_spendings(),
+                accountDto.getM_earn()
         );
         return  account;
     }
@@ -21,7 +22,9 @@ public class AccountMapper {
                 account.getId(),
                 account.getAccountHolderName(),
                 account.getBalance(),
-                account.getPassword()
+                account.getPassword(),
+                account.getMonthly_spending(),
+                account.getMonthly_earn()
         );
         return accountDto;
     }

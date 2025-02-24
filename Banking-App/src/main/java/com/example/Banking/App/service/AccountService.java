@@ -32,4 +32,5 @@ public interface AccountService {
     AccountDto getAccountByName(String accountHolderName);
 
 
+    Account findByAccountHolderName(String name);
 }

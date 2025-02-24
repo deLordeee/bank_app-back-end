@@ -10,7 +10,10 @@
         <a th:href="@{/withdraw}" th:class="${activeTab == 'withdraw'} ? 'active' : ''">Withdraw</a>
         <a th:href="@{/transfer}" th:class="${activeTab == 'transfer'} ? 'active' : ''">Transfer</a>
         <a th:href="@{/view/loans}" th:class="${activeTab == 'loans'} ? 'active' : ''">Loans</a>
+        <a th:href="@{/rates}" th:class="${activeTab == 'rates'} ? 'active' : ''">Exchange Rates</a>
+        <a th:href="@{/spending-earning}" th:class="${activeTab == 'spending-earning'} ? 'active' : ''">Spending & Earning</a>
         <form th:action="@{/logout}" method="post" class="logout-form">
+            <span class="nav-link" th:text="${#authentication.principal.username}"></span>
             <button type="submit">Logout</button>
         </form>
     </div>

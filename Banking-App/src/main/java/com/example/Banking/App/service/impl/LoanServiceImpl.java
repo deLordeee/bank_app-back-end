@@ -1,7 +1,9 @@
 package com.example.Banking.App.service.impl;
 
+import com.example.Banking.App.dto.LoanDto;
 import com.example.Banking.App.entity.Account;
 import com.example.Banking.App.entity.Loan;
+import com.example.Banking.App.entity.kafka.Producer;
 import com.example.Banking.App.repository.AccountRepository;
 import com.example.Banking.App.repository.LoanRepository;
 import com.example.Banking.App.service.LoanService;
@@ -21,9 +23,14 @@ public class LoanServiceImpl implements LoanService {
 
     private final AccountRepository accountRepository;
 
-    public LoanServiceImpl(LoanRepository loanRepository, AccountRepository accountRepository) {
+    private final Producer kafkaProducer;
+
+    public LoanServiceImpl(LoanRepository loanRepository,
+                           AccountRepository accountRepository,
+                           Producer kafkaProducer) {
         this.loanRepository = loanRepository;
         this.accountRepository = accountRepository;
+        this.kafkaProducer = kafkaProducer;
     }
 
     @Override
@@ -61,9 +68,18 @@ public class LoanServiceImpl implements LoanService {
         }
         loan.setRemainToPay(total_amount);
 
+        account.setMonthly_spending(account.getMonthly_spending() + amount);
 
 
         account.setBalance(account.getBalance() - amount);
+        LoanDto loanDto = new LoanDto();
+        loanDto.setId(loan.getId());
+        loanDto.setAccountId(account.getId());
+        loanDto.setAmount(amount);
+        loanDto.setAction("CREATED");
+        loanDto.setTimestamp(LocalDate.now());
+
+        kafkaProducer.sendMessage(loanDto);
 
         accountRepository.save(account);
         Loan savedLoan = loanRepository.save(loan);
@@ -86,7 +102,7 @@ public class LoanServiceImpl implements LoanService {
         Account borrower = accountRepository
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException("Account does not exist"));
-
+        borrower.setMonthly_earn(borrower.getMonthly_earn() + amount);
         double interestRate = 0.07;
 
 
@@ -96,7 +112,14 @@ public class LoanServiceImpl implements LoanService {
 
         Loan loan = new Loan(null, amount, amount, interestRate, years, monthlyPayment,
                 LocalDate.now(), LocalDate.now().plusYears(years), borrower, ACTIVE);
+        LoanDto loanDto = new LoanDto();
+        loanDto.setId(loan.getId());
+        loanDto.setAccountId(id);
+        loanDto.setAmount(amount);
+        loanDto.setAction("CREATED");
+        loanDto.setTimestamp(LocalDate.now());
 
+        kafkaProducer.sendMessage(loanDto);
         return loanRepository.save(loan);
     }
 }
